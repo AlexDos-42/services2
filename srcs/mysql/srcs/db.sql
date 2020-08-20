@@ -1,0 +1,5 @@
+CREATE USER 'alesanto'@'%' IDENTIFIED BY 'admin';
+GRANT ALL PRIVILEGES ON *.* TO 'alesanto'@'%' WITH GRANT OPTION;
+CREATE DATABASE wordpress;
+GRANT ALL PRIVILEGES ON wordpress.* TO 'alesanto'@'%' IDENTIFIED BY 'admin';
+FLUSH PRIVILEGES;
