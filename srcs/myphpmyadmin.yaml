@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myphpmyadmin-svc
+  labels:
+    app: app-phpadmin
+spec:
+  type: LoadBalancer 
+  ports:
+  - port: 5000
+    targetPort: 5000
+    name: http
+  selector:
+    app: app-phpadmin 
+---
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: myphpmyadmin-dep
+  labels:
+    app: app-phpadmin
+spec:
+  selector:
+    matchLabels:
+      app: app-phpadmin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: app-phpadmin
+    spec:
+      restartPolicy: Always
+      containers:
+      - image: myphpmyadmin
+        name: myphpmyadmin
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 5000
+            name: http
+        env:
+          - name: PMA_HOST
+            value: mymysql-svc
+          - name: PMA_PORT
+            value: "3306"
+          - name: PMA_USER
+            value: alesanto
+          - name: MYSQL_ROOT_PASSWORD
+            value: admin

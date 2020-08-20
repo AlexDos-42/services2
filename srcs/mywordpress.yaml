@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mywordpress-svc
+  labels:
+    app: app-wp
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5050
+      targetPort: 5050
+      name: http
+  selector:
+    app: app-wp
+---
+apiVersion: v1
+kind: PersistentVolumeClaim 
+metadata:
+  name: wp-conf
+  labels:
+    app: app-wp 
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi    
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mywordpress-dep
+  labels:
+    app: app-wp
+spec:
+  selector:
+    matchLabels:
+      app: app-wp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-wp
+    spec:
+      restartPolicy: Always
+      containers:
+      - image: mywordpress
+        name: mywordpress
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 5050
+            name: http
+        env:
+          - name: DB_NAME
+            value: wordpress
+          - name: DB_USER
+            value: alesanto
+          - name: DB_PASSWORD
+            value: admin
+          - name: DB_HOST
+            value: mymysql-svc
+        volumeMounts:
+        - name: wordpress-persistent-storage
+          mountPath: /var/www/wordpress 
+      volumes:
+        - name: wordpress-persistent-storage
+          persistentVolumeClaim:
+            claimName: wp-conf

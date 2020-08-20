@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myinfluxdb-svc
+  labels:
+    app: app-influxdb
+spec:
+  type: LoadBalancer 
+  ports:
+  - port: 8086
+    targetPort: 8086
+    name: http
+  selector:
+    app: app-influxdb
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: influxdb-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-pv-claim
+  labels:
+    app: app-influxdb
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myinfluxdb-dep
+  labels:
+    app: app-influxdb
+spec:
+  selector:
+    matchLabels:
+      app: app-influxdb
+  strategy:
+    type: Recreate    
+  template:
+    metadata:
+      labels:
+        app: app-influxdb
+    spec:
+      restartPolicy: Always      
+      containers:
+      - name: myinfluxdb
+        image: myinfluxdb
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 8086
+            name: http
+        volumeMounts:
+        - name: influxdb-persistent-storage
+          mountPath: /var/lib/influxdb
+      volumes:
+      - name: influxdb-persistent-storage
+        persistentVolumeClaim:
+          claimName: influxdb-pv-claim
