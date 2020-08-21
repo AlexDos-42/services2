@@ -12,20 +12,42 @@ spec:
     name: http
   selector:
     app: app-mysql
+
 ---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  labels:
+    type: local
+spec:
+  storageClassName: mysql-db
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /var/lib/mysql/
+
+---
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pv-claim
   labels:
-    app: app-mysql
+    type: local
 spec:
+  storageClassName: mysql-db
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
+
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -55,9 +77,9 @@ spec:
           - name: MYSQL_ROOT_PASSWORD
             value: admin
         volumeMounts:
-        - name: mysql-persistent-storage
+        - name: mysql-pv
           mountPath: /var/lib/mysql
       volumes:
-      - name: mysql-persistent-storage
+      - name: mysql-pv
         persistentVolumeClaim:
           claimName: mysql-pv-claim
