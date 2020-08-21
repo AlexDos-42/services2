@@ -21,7 +21,7 @@ if [ "$1" = "clear" ]
 then
 	echo "Delete containers"
 	docker system prune -a
-	kubectl delete -k srcs
+	kubectl delete -f srcs
 	exit
 fi
 
@@ -36,14 +36,11 @@ then
 #	open -g -a Docker
 #	echo "Start Docker-Machine"
 	echo "Start minikube"
-	minikube start --cpus=3 --disk-size=30000mb --memory=3000mb --extra-config=apiserver.service-node-port-range=1-35000 --bootstrapper=kubeadm
+	minikube start --vm-driver=docker --extra-config=apiserver.service-node-port-range=1-35000 --bootstrapper=kubeadm
 	minikube addons enable dashboard
-	minikube addons enable ingress
 	minikube addons enable metrics-server
 	exit
 fi
-
-echo "UPDATE data_source SET url = 'http://influxdb:8086';" | sqlite3 srcs/grafana/grafana.db
 
 eval $(minikube docker-env)
 export MINIKUBE_IP=$MINIKUBE_IP
@@ -72,7 +69,15 @@ kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifes
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifests/metallb.yaml
 kubectl apply -f srcs/metallb.yaml
 
-kubectl apply -k ./srcs/
+#kubectl apply -k ./srcs/
+kubectl apply -f srcs/mynginx.yaml
+kubectl apply -f srcs/myftps.yaml
+kubectl apply -f srcs/mymysql.yaml
+kubectl apply -f srcs/myphpmyadmin.yaml
+kubectl apply -f srcs/mywordpress.yaml
+kubectl apply -f srcs/myinfluxdb.yaml
+kubectl apply -f srcs/mytelegraf.yaml
+kubectl apply -f srcs/mygrafana.yaml
 
 
 # kubectl exec -t nginx-75b7bfdb6b-p5vhv -i -t -- bash -il
