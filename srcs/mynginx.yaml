@@ -11,9 +11,11 @@ spec:
   ports:
   - port: 80
     targetPort: 80
+    protocol: TCP
     name: http
   - port: 443
     targetPort: 443
+    protocol: TCP
     name: https
   - port: 30022
     targetPort: 30022

@@ -1,8 +1,10 @@
-FROM alpine:3.12.0:latest
+FROM alpine:3.12.0
 
-RUN apk update
+RUN apk update && apk upgrade
 RUN apk add influxdb
-RUN apk add bash
+COPY srcs/influxdb.conf /etc/
+
+VOLUME ["/var/lib/influxdb"]
 
 EXPOSE 8086
 

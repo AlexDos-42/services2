@@ -26,7 +26,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/data"
+    path: /var/lib/influxdb/
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

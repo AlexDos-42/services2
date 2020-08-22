@@ -6,7 +6,7 @@ RUN apk add nginx
 RUN mkdir -p /run/nginx
 COPY ./srcs/* /srcs/
 
-COPY ./srcs/nginx.conf /etc/nginx/conf.d/default.conf
+COPY /srcs/nginx.conf /etc/nginx/conf.d/default.conf
 
 #ssh
 RUN apk add openssh 
