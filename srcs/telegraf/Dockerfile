@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.12.0
 
 RUN mkdir /etc/telegraf
 RUN wget https://dl.influxdata.com/telegraf/releases/telegraf-1.13.3-static_linux_amd64.tar.gz 

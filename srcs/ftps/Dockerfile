@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.12.0
 
 RUN apk update
 RUN apk --no-cache add vsftpd
@@ -13,5 +13,4 @@ VOLUME /ftp/ftp
 
 RUN chmod 775 /bin/ftps.sh
 
-CMD "/bin/ftps.sh"
-
+ENTRYPOINT ["sh", "/bin/ftps.sh"]

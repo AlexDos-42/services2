@@ -31,15 +31,17 @@ spec:
   selector:
     matchLabels:
       app: app-nginx
-  replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: app-nginx
     spec:
+      restartPolicy: Always
       containers:
       - image: mynginx
-        name: mynginx
+        name: mynginxname
         imagePullPolicy: Never
         ports:
           - containerPort: 80

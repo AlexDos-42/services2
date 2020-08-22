@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.12.0:latest
 
 RUN apk update
 RUN apk add influxdb
