@@ -42,8 +42,9 @@ then
 	exit
 fi
 
-eval $(minikube docker-env)
-export MINIKUBE_IP=$MINIKUBE_IP
+eval `minikube docker-env`
+
+export MINIKUBE_IP=`minikube ip`
 echo "Minicube ip : $MINIKUBE_IP"
 
 echo "Replace IP in config-file :"
