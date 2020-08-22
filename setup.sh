@@ -42,9 +42,11 @@ then
 	exit
 fi
 
+eval $(minikube docker-env)
 eval `minikube docker-env`
 
-export MINIKUBE_IP=`minikube ip`
+#export MINIKUBE_IP=`minikube ip`
+export MINIKUBE_IP=172.17.0.2
 echo "Minicube ip : $MINIKUBE_IP"
 
 echo "Replace IP in config-file :"
@@ -54,8 +56,16 @@ cp srcs/mysql/srcs/wordpress.sql.copy srcs/mysql/srcs/wordpress.sql
 sed -i "s/MYIP/$MINIKUBE_IP/g" srcs/mysql/srcs/wordpress.sql
 cp srcs/nginx/srcs/index.html srcs/nginx/srcs/tmp-index.html
 sed -i "s/IP/$MINIKUBE_IP/g" srcs/nginx/srcs/tmp-index.html
+cp srcs/nginx/srcs/nginx.conf.copy srcs/nginx/srcs/nginx.conf
+sed -i "s/MYIP/$MINIKUBE_IP/g" srcs/nginx/srcs/nginx.conf
 cp srcs/myftps.yaml.copy srcs/myftps.yaml
 sed -i "s/MYIP/$MINIKUBE_IP/g" srcs/myftps.yaml
+cp srcs/ftps/srcs/ftps.sh.copy srcs/ftps/srcs/ftps.sh
+sed -i "s/MYIP/$MINIKUBE_IP/g" srcs/ftps/srcs/ftps.sh
+cp srcs/telegraf/srcs/telegraf.conf.copy srcs/telegraf/srcs/telegraf.conf
+sed -i "s/MYIP/$MINIKUBE_IP/g" srcs/telegraf/srcs/telegraf.conf
+cp srcs/grafana/srcs/datasources.yaml.copy srcs/grafana/srcs/datasources.yaml
+sed -i "s/MYIP/$MINIKUBE_IP/g" srcs/grafana/srcs/datasources.yaml
 
 docker build -t myftps srcs/ftps
 docker build -t mynginx srcs/nginx
@@ -70,7 +80,6 @@ kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifes
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifests/metallb.yaml
 kubectl apply -f srcs/metallb.yaml
 
-#kubectl apply -k ./srcs/
 kubectl apply -f srcs/mynginx.yaml
 kubectl apply -f srcs/myftps.yaml
 kubectl apply -f srcs/mymysql.yaml
